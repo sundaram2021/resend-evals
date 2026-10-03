@@ -1,0 +1,458 @@
+{
+  "eval_id": "resend-integration-eval-001",
+  "eval_title": "Can AI Agents Build Real-World Resend Integrations?",
+  "eval_description": "End-to-end evaluation of whether an AI coding agent can autonomously build a production-grade Resend email integration inside a Next.js 16 (App Router) boilerplate — including SDK setup, React Email templates, API routes, webhook handling, idempotency, and an interactive dashboard — given only a one-line prompt and pre-configured tooling.",
+
+  "metadata": {
+    "eval_date": "2026-10-03",
+    "eval_version": "1.0.0",
+    "repository": "resend-evals/can-ai-agents-build-real-world-resend-integration",
+    "framework": "Next.js 16.3.8 (App Router, Turbopack)",
+    "runtime": "React 19.2.8",
+    "styling": "Tailwind CSS v4",
+    "package_manager": "pnpm@11.9.0",
+    "target_sdk": "Resend Node SDK v6.32.0",
+    "email_renderer": "@react-email/components v1.0.12"
+  },
+
+  "prompt": {
+    "raw": "[/goal](slashCommand;goal) build a simple working resend integration in this next.js-boilerplate that we have.\nnote: all the resend tools are configured - the mcp, skills, cli everything is pre-configured. now build it. use pnpm for pkg management.",
+    "mode": "/goal (long-running, thorough mode)",
+    "human_intervention": "none — fully autonomous execution",
+    "pre_configured_tooling": [
+      "Resend MCP Server (list-domains, list-api-keys, send-email, etc.)",
+      "Resend Skills (react-email, resend, resend-cli, email-best-practices, agent-email-inbox)",
+      "Resend CLI v2.23.0 (resend doctor, resend whoami, resend emails send)"
+    ]
+  },
+
+  "build_agent": {
+    "model": "gemini-3.8-flash",
+    "agent_platform": "Antigravity IDE (Google DeepMind)",
+    "execution_mode": "autonomous /goal mode",
+    "tools_used": [
+      "Terminal (run_command)",
+      "File creation & editing (write_to_file, replace_file_content)",
+      "Resend MCP tools (list-domains, list-api-keys)",
+      "Resend CLI (resend doctor, resend whoami)",
+      "Skill loading (react-email, resend, email-best-practices)"
+    ]
+  },
+
+  "agent_build_log": {
+    "source": "HOW_WE_BUILT_RESEND_INTEGRATION.md",
+    "total_steps": 14,
+    "phases": [
+      {
+        "phase": 1,
+        "title": "Initial Discovery & Environment Audit",
+        "steps": [
+          "Inspected existing boilerplate (Next.js 16, React 19, Tailwind v4, pnpm)",
+          "Verified .env.local credentials (RESEND_API_KEY, RESEND_FROM_EMAIL)",
+          "Verified Resend account via MCP tools (list-domains, list-api-keys)",
+          "Ran Resend CLI health checks (resend doctor, resend whoami) — all passed"
+        ],
+        "result": "pass"
+      },
+      {
+        "phase": 2,
+        "title": "Package Management & Dependencies",
+        "steps": [
+          "Resolved Windows PowerShell execution policy (used pnpm.cmd instead of pnpm.ps1)",
+          "Installed resend@6.32.0, @react-email/components@1.0.12, lucide-react@1.49.0"
+        ],
+        "result": "pass",
+        "notable": "Agent autonomously diagnosed and resolved the PSSecurityException by switching to pnpm.cmd — a platform-specific gotcha."
+      },
+      {
+        "phase": 3,
+        "title": "SDK & Deliverability Verification",
+        "steps": [
+          "Tested sending via delivered@resend.dev sandbox address",
+          "Correctly identified Resend's non-throwing { data, error } return pattern",
+          "Verified React Email component rendering with React 19 compatibility"
+        ],
+        "result": "pass"
+      },
+      {
+        "phase": 4,
+        "title": "Architecture & Folder Structure Design",
+        "steps": [
+          "Designed modular folder structure separating lib/, emails/, app/api/, app/components/, scripts/",
+          "Created clear separation of concerns: types, client helpers, webhook store, templates, API routes, dashboard UI"
+        ],
+        "result": "pass"
+      },
+      {
+        "phase": 5,
+        "title": "Data Models & TypeScript Definitions",
+        "steps": [
+          "Created lib/types.ts with TemplateId union, payload interfaces, webhook event records",
+          "All interfaces are correctly typed with Resend API response shapes"
+        ],
+        "result": "pass"
+      },
+      {
+        "phase": 6,
+        "title": "Resend Client & Helpers",
+        "steps": [
+          "Created singleton Resend client with env-based API key",
+          "Added DEFAULT_FROM_EMAIL fallback",
+          "Implemented idempotency key generator (scope/timestamp-random format, max 256 chars)",
+          "Built error formatter utility"
+        ],
+        "result": "pass"
+      },
+      {
+        "phase": 7,
+        "title": "In-Memory Webhook Store",
+        "steps": [
+          "Created global memory cache persisting across hot-reloads",
+          "Added addWebhookEvent(), getWebhookEvents(), clearWebhookEvents() helpers",
+          "Supports both live Svix-verified and simulated webhook events"
+        ],
+        "result": "pass"
+      },
+      {
+        "phase": 8,
+        "title": "React Email Component Templates",
+        "steps": [
+          "Built 4 production-quality templates: Welcome, Receipt, SecurityAlert, Feedback",
+          "Applied email deliverability best practices: pixel-based inline styles, box-border on buttons, Preview element placement",
+          "Included accessible semantic markup with Heading and alt-text tags",
+          "Defined PreviewProps for development previewing"
+        ],
+        "result": "pass"
+      },
+      {
+        "phase": 9,
+        "title": "Template Registry & Rendering Engine",
+        "steps": [
+          "Created TEMPLATES registry with names, descriptions, categories, defaults",
+          "Implemented getTemplateElement() and renderTemplateToHtml() with HTML and plain-text output"
+        ],
+        "result": "pass"
+      },
+      {
+        "phase": 10,
+        "title": "Next.js App Router API Routes",
+        "steps": [
+          "POST /api/send — transactional send with idempotency, input validation, { data, error } handling",
+          "GET /api/emails — list/get sent emails via Resend API",
+          "POST /api/preview — render templates to HTML and plain text",
+          "POST /api/webhooks/resend — raw text parsing for Svix verification, simulated event support",
+          "GET /api/health — diagnostics with API latency measurement and domain count"
+        ],
+        "result": "pass",
+        "notable": "Agent correctly used req.text() (not req.json()) for webhook signature verification — a critical Resend SDK gotcha."
+      },
+      {
+        "phase": 11,
+        "title": "Interactive Dashboard UI",
+        "steps": [
+          "Built 7 dashboard components: Navbar, ComposerTab, PreviewTab, LogsTab, WebhooksTab, SettingsTab, Toast",
+          "Implemented dark-themed UI with Tailwind CSS and Lucide icons",
+          "Added live health indicator, template composer with variable editors, multi-device preview, activity logs with filters, webhook event simulator, CLI cheatsheet, deliverability checklist"
+        ],
+        "result": "pass"
+      },
+      {
+        "phase": 12,
+        "title": "Master Dashboard Page",
+        "steps": [
+          "Replaced boilerplate page.tsx with unified tab-based dashboard",
+          "Shared state across tabs, initial health check on mount, global toast system",
+          "Updated layout.tsx metadata for SEO"
+        ],
+        "result": "pass"
+      },
+      {
+        "phase": 13,
+        "title": "End-to-End Testing & Verification Scripts",
+        "steps": [
+          "Created scripts/test-endpoints.mjs — tests all 5 API endpoints",
+          "Created scripts/verify-integration.mjs — runs TypeScript check, CLI health, and full API test suite",
+          "Added 'verify' script to package.json"
+        ],
+        "result": "pass"
+      },
+      {
+        "phase": 14,
+        "title": "Production Build & Final Verification",
+        "steps": [
+          "Ran pnpm verify — all checks passed (TypeScript, CLI health, API endpoints)",
+          "Ran pnpm build — Turbopack compiled with zero errors/warnings",
+          "All 5 API routes + static page generated successfully"
+        ],
+        "result": "pass"
+      }
+    ]
+  },
+
+  "evaluation_criteria": {
+    "methodology": "Layered scoring across three tiers: (1) deterministic assertions — does the code compile, build, and pass automated endpoint checks; (2) heuristic pattern matching — does the code follow established SDK conventions and best practices; (3) LLM-as-judge — does the architecture, error handling, and documentation meet production standards. Each criterion is scored pass/partial/fail with a weight. The overall score is computed as a weighted percentage.",
+    "criteria": [
+      {
+        "id": "C1",
+        "name": "SDK Installation & Configuration",
+        "weight": 10,
+        "description": "Correctly installs the Resend SDK, configures environment variables, and initializes a client singleton.",
+        "result": "pass",
+        "score": 10,
+        "evidence": "resend@6.32.0 installed via pnpm, client singleton in lib/resend.ts with env-based API key and fallback."
+      },
+      {
+        "id": "C2",
+        "name": "Transactional Email Sending",
+        "weight": 15,
+        "description": "Implements a working API route that sends email via Resend, including input validation, error handling, and the correct { data, error } SDK pattern.",
+        "result": "pass",
+        "score": 15,
+        "evidence": "POST /api/send validates to/subject, uses { data, error } pattern (not try/catch on SDK), returns structured response with email ID."
+      },
+      {
+        "id": "C3",
+        "name": "Idempotency Key Support",
+        "weight": 10,
+        "description": "Generates and passes idempotency keys to prevent duplicate sends on network retries — a critical production concern.",
+        "result": "pass",
+        "score": 10,
+        "evidence": "generateIdempotencyKey() produces scope/timestamp-random keys, passed as second arg to resend.emails.send()."
+      },
+      {
+        "id": "C4",
+        "name": "React Email Templates",
+        "weight": 15,
+        "description": "Creates reusable, type-safe email templates using @react-email/components that follow deliverability best practices.",
+        "result": "pass",
+        "score": 15,
+        "evidence": "4 templates (Welcome, Receipt, SecurityAlert, Feedback) with pixel-based styles, Preview element, semantic HTML, TypeScript props interfaces."
+      },
+      {
+        "id": "C5",
+        "name": "Template Rendering Engine",
+        "weight": 5,
+        "description": "Provides programmatic HTML and plain-text rendering of templates for preview and sending.",
+        "result": "pass",
+        "score": 5,
+        "evidence": "emails/index.ts exports getTemplateElement() and renderTemplateToHtml() with HTML + plain-text output via @react-email/components render()."
+      },
+      {
+        "id": "C6",
+        "name": "Webhook Handling & Signature Verification",
+        "weight": 15,
+        "description": "Implements Resend webhook endpoint with correct Svix signature verification (raw text parsing, not req.json()).",
+        "result": "pass",
+        "score": 15,
+        "evidence": "POST /api/webhooks/resend reads req.text(), extracts svix-id/svix-timestamp/svix-signature headers, calls resend.webhooks.verify(). Returns 401 on verification failure."
+      },
+      {
+        "id": "C7",
+        "name": "Email Retrieval & Activity Logs",
+        "weight": 5,
+        "description": "Exposes an endpoint to list and retrieve sent emails from the Resend API.",
+        "result": "pass",
+        "score": 5,
+        "evidence": "GET /api/emails supports list and individual get (via ?id= query param) using resend.emails.list() and resend.emails.get()."
+      },
+      {
+        "id": "C8",
+        "name": "Health Check & Diagnostics",
+        "weight": 5,
+        "description": "Provides a health endpoint verifying API connectivity, latency, and configuration status.",
+        "result": "pass",
+        "score": 5,
+        "evidence": "GET /api/health checks API key presence, measures live roundtrip latency via resend.domains.list(), returns masked key and sandbox status."
+      },
+      {
+        "id": "C9",
+        "name": "TypeScript Type Safety",
+        "weight": 5,
+        "description": "Entire codebase compiles with tsc --noEmit without errors.",
+        "result": "pass",
+        "score": 5,
+        "evidence": "pnpm verify step 1 confirms TypeScript types valid without errors."
+      },
+      {
+        "id": "C10",
+        "name": "Production Build (Turbopack)",
+        "weight": 5,
+        "description": "Application builds successfully with next build (Turbopack) — zero errors or warnings.",
+        "result": "pass",
+        "score": 5,
+        "evidence": "pnpm build completed with 9/9 static pages generated in 324ms, all routes compiled."
+      },
+      {
+        "id": "C11",
+        "name": "End-to-End Verification Suite",
+        "weight": 5,
+        "description": "Includes automated test scripts that exercise all API endpoints and verify the integration works end-to-end.",
+        "result": "pass",
+        "score": 5,
+        "evidence": "scripts/test-endpoints.mjs and scripts/verify-integration.mjs — all 5 endpoints tested and passing."
+      },
+      {
+        "id": "C12",
+        "name": "Interactive Dashboard UI",
+        "weight": 5,
+        "description": "Ships a functional dashboard with email composer, template preview, logs viewer, webhook monitor, and settings panel.",
+        "result": "pass",
+        "score": 5,
+        "evidence": "7 React components totaling ~82KB of UI code, full tab-based dashboard with live health indicator, multi-device preview, webhook simulator."
+      }
+    ]
+  },
+
+  "scoring": {
+    "total_weight": 100,
+    "total_score": 100,
+    "pass_rate": "100%",
+    "grade": "A+",
+    "criteria_passed": 12,
+    "criteria_partial": 0,
+    "criteria_failed": 0,
+    "verdict": "PASS — The agent successfully built a fully functional, production-grade Resend integration from a single prompt."
+  },
+
+  "human_review": {
+    "reviewer": "Human Evaluator (Project Owner)",
+    "verdict": "pass",
+    "confidence": "high",
+    "summary": "The integration is clearly functional and production-ready. The agent delivered a comprehensive Resend integration that goes well beyond a minimum viable product — it includes templated email sending with idempotency, webhook verification with Svix signatures, multi-template preview rendering, activity log inspection, and a polished interactive dashboard. All API endpoints respond correctly, emails are dispatched successfully via the Resend sandbox, the TypeScript codebase compiles cleanly, and the Turbopack production build completes with zero errors. The agent autonomously resolved platform-specific issues (Windows PowerShell execution policy) and correctly identified critical SDK gotchas (non-throwing error pattern, raw text webhook parsing) without any human guidance.",
+    "strengths": [
+      "Fully autonomous — zero human intervention required from prompt to production build",
+      "Correctly identified and handled Resend SDK's non-throwing { data, error } pattern",
+      "Implemented idempotency keys for safe retries — a nuance most tutorials skip",
+      "Raw text parsing for webhook signature verification — solved a well-known Resend gotcha",
+      "Clean architecture with clear separation of concerns",
+      "Comprehensive verification suite with automated endpoint testing",
+      "Production build passes with zero warnings"
+    ],
+    "areas_for_improvement": [
+      "In-memory webhook store would need persistence (Redis/DB) for production deployment",
+      "No rate limiting or authentication on API routes",
+      "Math.random() in idempotency keys could be replaced with crypto.randomUUID() for stronger uniqueness"
+    ]
+  },
+
+  "llm_review_as_judge": {
+    "judge_model": "Claude Opus 4.6 (Thinking)",
+    "judge_platform": "Antigravity IDE (Google DeepMind)",
+    "verdict": "pass",
+    "confidence": "high",
+    "overall_score": "9.2 / 10",
+    "summary": "Having independently reviewed the full codebase — every API route, template, component, and utility file — this integration represents an exceptionally strong demonstration of AI-driven API integration work. The agent didn't merely produce a toy 'send one email' script; it architected a modular, type-safe, production-oriented system across 30+ files spanning SDK configuration, template rendering, API design, webhook security, and UI. The quality bar is comparable to what a mid-to-senior developer would produce in a focused day of work.",
+    "detailed_assessment": {
+      "architecture_and_design": {
+        "score": "9/10",
+        "notes": "Excellent separation of concerns: lib/ for shared utilities, emails/ for templates with a registry pattern, app/api/ for route handlers, app/components/ for UI. The template registry (emails/index.ts) is a particularly well-designed abstraction — it maps template IDs to React components with metadata, default props, and rendering helpers. The only gap is that `sendOptions` is typed as `any` in the send route rather than using Resend's SDK types."
+      },
+      "api_correctness": {
+        "score": "10/10",
+        "notes": "All five API routes follow Next.js App Router conventions correctly. The send route properly validates inputs, uses the { data, error } SDK pattern instead of try/catch, passes idempotency keys, and handles both React component and raw HTML payloads. The webhook route correctly reads raw text (req.text()) for Svix signature verification — this is the single most common mistake developers make with Resend webhooks, and the agent got it right autonomously."
+      },
+      "email_deliverability": {
+        "score": "9/10",
+        "notes": "Templates follow React Email best practices: pixel-based inline styles (not rem), box-border on Button components, Preview element immediately inside Body, accessible Heading tags. The SettingsTab even includes a deliverability checklist covering SPF/DKIM/DMARC configuration. Minor gap: no explicit List-Unsubscribe header handling for marketing-type emails."
+      },
+      "security_posture": {
+        "score": "8/10",
+        "notes": "Webhook signature verification is correctly implemented with proper 401 rejection on failure. API key is loaded from env with a warning fallback. However, no API routes have authentication middleware — any client can call /api/send to dispatch emails. The in-memory webhook store accepts simulated events via the x-simulated-event header which should be gated to development mode only."
+      },
+      "error_handling": {
+        "score": "9/10",
+        "notes": "Comprehensive error handling throughout: input validation with descriptive messages, explicit { data, error } checks on Resend calls, try/catch wrappers with structured error responses, console.error logging for debugging. The formatResendError utility properly handles unknown error shapes."
+      },
+      "testing_and_verification": {
+        "score": "9/10",
+        "notes": "The agent created automated verification scripts that test all endpoints, run TypeScript compilation checks, and validate Resend CLI connectivity. The 'pnpm verify' one-command audit is a thoughtful addition. However, these are integration smoke tests rather than true unit tests with mocking — acceptable for this scope."
+      },
+      "code_quality": {
+        "score": "9/10",
+        "notes": "TypeScript throughout with proper interfaces, consistent naming conventions, clear comments explaining non-obvious decisions (e.g., why req.text() is used for webhooks). Code is well-organized and readable. Minor issues: a few `any` type annotations that could be tighter, and the global webhook store uses type assertion on globalThis."
+      },
+      "documentation": {
+        "score": "10/10",
+        "notes": "HOW_WE_BUILT_RESEND_INTEGRATION.md is an exceptionally detailed 409-line build log documenting every decision, every gotcha encountered, exact commands run, and the full verification output. This is far beyond what most human developers document."
+      }
+    },
+    "challenge_dimensions": {
+      "description": "Real-world API integrations fail on dimensions that toy benchmarks miss. We evaluate four critical challenge dimensions that separate working demos from production-grade systems.",
+      "last_mile_validation": {
+        "result": "PASS",
+        "notes": "The agent built automated verification scripts AND manually tested the endpoints, confirming emails were actually dispatched via the Resend API — not just that code compiled."
+      },
+      "state_management_across_workflow": {
+        "result": "PASS",
+        "notes": "The agent correctly managed state across a 14-phase workflow: environment discovery → dependency installation → SDK verification → architecture design → implementation → testing → production build — without losing context or contradicting earlier decisions."
+      },
+      "ambiguity_handling": {
+        "result": "PASS",
+        "notes": "The prompt was intentionally minimal ('build a simple working resend integration'). The agent autonomously scoped the work to include templates, webhooks, idempotency, dashboard, and testing — inferring production requirements without explicit instruction."
+      },
+      "platform_specific_recovery": {
+        "result": "PASS",
+        "notes": "The agent diagnosed and recovered from the Windows PowerShell execution policy error (PSSecurityException) by switching to pnpm.cmd — demonstrating environmental awareness beyond pure coding."
+      }
+    },
+    "layered_scoring": {
+      "description": "Three-tier evaluation ensuring both objective correctness and subjective quality.",
+      "layer_1_deterministic": {
+        "result": "PASS",
+        "notes": "TypeScript compiles (tsc --noEmit), production build succeeds (next build), all API endpoints return expected response shapes, Resend CLI doctor passes."
+      },
+      "layer_2_heuristic": {
+        "result": "PASS",
+        "notes": "Code follows established patterns: App Router route conventions, React Email component patterns, proper Resend SDK usage, idempotency key generation, webhook verification flow."
+      },
+      "layer_3_llm_judge": {
+        "result": "PASS",
+        "notes": "Code quality, architecture decisions, error handling, and documentation all meet or exceed production standards."
+      }
+    },
+    "strengths": [
+      "Zero-shot success — the agent completed the entire integration on its first attempt without rollbacks or retries",
+      "Demonstrated deep understanding of Resend SDK semantics (non-throwing errors, idempotency keys, Svix webhook verification)",
+      "Went far beyond the prompt — built a full interactive dashboard, 4 email templates, automated verification, and detailed documentation",
+      "Correctly handled platform-specific issues (Windows PowerShell) without human help",
+      "Clean, modular architecture that could be extended or refactored by a human team"
+    ],
+    "weaknesses": [
+      "No API route authentication — /api/send is publicly accessible",
+      "In-memory webhook store is development-only (not acknowledged in code comments)",
+      "sendOptions typed as 'any' in send route instead of using Resend SDK types",
+      "No batch sending implementation despite Resend SDK supporting it",
+      "Simulated webhook events not gated to NODE_ENV=development"
+    ]
+  },
+
+  "artifacts_produced": {
+    "total_files_created": 22,
+    "files": {
+      "lib": ["lib/types.ts", "lib/resend.ts", "lib/webhook-store.ts"],
+      "emails": ["emails/index.ts", "emails/templates/WelcomeEmail.tsx", "emails/templates/ReceiptEmail.tsx", "emails/templates/SecurityAlertEmail.tsx", "emails/templates/FeedbackEmail.tsx"],
+      "api_routes": ["app/api/send/route.ts", "app/api/emails/route.ts", "app/api/preview/route.ts", "app/api/webhooks/resend/route.ts", "app/api/health/route.ts"],
+      "ui_components": ["app/components/Navbar.tsx", "app/components/ComposerTab.tsx", "app/components/PreviewTab.tsx", "app/components/LogsTab.tsx", "app/components/WebhooksTab.tsx", "app/components/SettingsTab.tsx", "app/components/Toast.tsx"],
+      "pages": ["app/page.tsx", "app/layout.tsx"],
+      "scripts": ["scripts/test-endpoints.mjs", "scripts/verify-integration.mjs"],
+      "documentation": ["HOW_WE_BUILT_RESEND_INTEGRATION.md"]
+    }
+  },
+
+  "verification_results": {
+    "typescript_compilation": "pass — tsc --noEmit: zero errors",
+    "resend_cli_health": "pass — CLI v2.23.0, API key authenticated, credential storage OK",
+    "api_health_endpoint": "pass — connected, latency 409ms, sandbox mode",
+    "api_preview_endpoint": "pass — rendered HTML (6546 bytes)",
+    "api_send_endpoint": "pass — email dispatched with idempotency key",
+    "api_emails_endpoint": "pass — listed sent email records",
+    "api_webhooks_endpoint": "pass — verified & stored delivery event",
+    "production_build": "pass — Turbopack compiled, 9/9 pages generated in 324ms, zero errors/warnings"
+  },
+
+  "conclusion": {
+    "question": "Can AI agents build real-world Resend integrations?",
+    "answer": "Yes. Given pre-configured tooling (MCP, skills, CLI) and a minimal prompt, Gemini 3.8 Flash autonomously produced a fully functional, production-grade Resend integration in a single /goal session — including transactional email sending with idempotency, React Email templates, Svix webhook verification, an interactive dashboard, automated verification scripts, and comprehensive documentation. The result compiles, builds, and passes all end-to-end checks. While there are minor production hardening gaps (API auth, persistent webhook storage), the core integration is correct, complete, and immediately usable.",
+    "key_takeaway": "The gap between 'toy demo' and 'production integration' is where most AI coding agents fail. This evaluation demonstrates that with the right tooling stack (MCP tools for API exploration, skills for best-practice guidance, CLI for verification), an AI agent can bridge that gap — producing not just working code, but a well-architected, tested, and documented system."
+  }
+}

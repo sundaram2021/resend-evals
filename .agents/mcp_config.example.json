@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "resend": {
+      "serverUrl": "https://mcp.resend.com/mcp",
+      "url": "https://mcp.resend.com/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_RESEND_API_KEY"
+      }
+    }
+  }
+}
